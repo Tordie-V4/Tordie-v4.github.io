@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Tordie Mathematics</title>
+</head>
+<body>
+    <div class="sidebar" id="sidebar"></div>
+    <div class="content" id="content">
+        <h1>Tordie Documentation - Mathematics</h1>
+        <p>Tordie comes with many custom mathematical operations and tools designed specifically for the usage in Origami.</p>
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#helper-functions">Helper Functions</a></li>
+                <ul>
+                    <li class="indent"><a href="#dist">Distance</a></li>
+                    <li class="indent"><a href="#diff">Gradient/Derivative</a></li>
+                    <li class="indent"><a href="#exp">Exponential</a></li>
+                    <li class="indent"><a href="#rad-non-centered-ellipse-lambda">Radial Function of Non-Centered Ellipse</a></li>
+                    <li class="indent"><a href="#rad-poly-star-lambda">Radial Function of Regular Polygon</a></li>
+                </ul>
+            </ul>
+        </div>
+        <h2 id="helper-functions">Helper Functions</h2>
+        <p>Helper functions are simple functions that can be used for common calculations, designed with Tordie classes in mind.</p>
+        
+        <hr>
+        <h3 id="dist">Distance</h3>
+        <p>
+            The distance function measures the euclidean distance between two points, say \(\boldsymbol{p}_0\) and \(\boldsymbol{p}_1\) by taking
+            \[\text{dist}(\boldsymbol{p}_0, \boldsymbol{p}_1) = \|\boldsymbol{p}_1-\boldsymbol{p}_0\|_2.\]
+        </p>
+        <h4>Usage</h4>
+        <pre><code class="python">def dist(point0: Point, point1: Point) -> float</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><b>point0</b>: <i>Point</i> - First input point</li>
+            <li><b>point1</b>: <i>Point</i> - Second input point in which you want the distance to the first input point.</li>
+        </ul>
+        <h4>Returns</h4>
+        <p>Returns the euclidean distance between the two input points.</p>
+    
+        <hr>
+        <h3 id="diff">Gradient/Derivative</h3>
+        <p>
+            Approximates the first derivative of a given function at a given point. The function is approximated using first principles, which is given by
+
+            \[\lim_{h \to 0} \dfrac{f(x+h) - f(x)}{h},\]
+
+            where \(f: \mathbb{R} \mapsto \mathbb{R}\) is differentiable at the point \(x\).
+        </p>
+        <h4>Usage</h4>
+        <pre><code class="python">def diff(fx: function, t: (float, int)) -> float</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><b>fx</b>:<i>function</i> - Function to approximate the derivative of.</li>
+            <li><b>t</b>: <i>float</i> - Parametric point at which to approximate the derivative of the function.</li>
+        </ul>
+        <h4>Returns</h4>
+        <p>Returns the approximate derivative of the function at the given point.</p>
+        
+        <hr>
+        <h3 id="exp">Exponential</h3>
+        <p>
+            Exponentials are a common way to map a rectangular region into a circular region. The exponential function is given by a complex conformal mapping,
+            \[f(z) = e^z = e^{x+iy} = e^x(\cos(y) + i\sin(y)).\] Tordie supports an additional argument that allows for a radius function to be passed in, which
+            will scale the exponential function. This is useful for creating spirals and non-circular shapes. This function is at default \(r(t) = 1\) for all \(t \in \mathbb{R}\),
+            but generally can be used to write mappings in the form \(f(z) = r(z) e^{z}\).
+        </p>
+        <h4>Usage</h4>
+        <pre><code class="python">def exp(p: Point, rad=lambda t: 1) -> Point</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><b>p</b>: <i>Point</i> - Input point to be mapped</li>
+        </ul>
+        <h4>Keyword Arguments</h4>
+        <ul>
+            <li><b>rad</b>: <i>function</i> - Radius function</li>
+        </ul>
+        <h4>Returns</h4>
+        <p>Returns a mapped point under the transformation \(z \mapsto \text{rad}(z)e^z\).</p>
+
+
+        <hr>
+        <h3 id="rad-non-centered-ellipse-lambda">Radial Function of Non-Centered Ellipse</h3>
+        <p>
+            Defines a polar function of a non-centered ellipse with the angle as the argument. Paired with the <a href="#exp">exponential</a> function, this function can be used to map a rectangular region into a non-centered ellipse. For a center point
+            \(\boldsymbol{p} = (x_0, y_0)\), the radial function for the ellipse \(\dfrac{x^2}{a^2} + \dfrac{y^2}{b^2} = 1\) is given by
+
+            \[r(\theta) = \dfrac{a^2y_0\sin \theta + b^2x_0 \cos \theta+ab\sqrt{\sin^2\theta(a^2 - x_0^2) + \cos^2 \theta(b^2 - y_0^2) + 2x_0y_0 \sin \theta \cos \theta }}{a^2 \sin^2 \theta + b^2 \cos^2 \theta}.\]
+        </p>
+        <h4>Usage</h4>
+        <pre><code class="python">def rad_non_centered_ellipse_lambda(a: (int, float), b: (int, float), p: Point) -> function</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><b>a</b>: <i>int</i> or <i>float</i> - \(x\)-axis radial length</li>
+            <li><b>p</b>: <i>int</i> or <i>float</i> - \(y\)-axis radial length</li>
+            <li><b>p</b>: <i>Point</i> - Center of the ellipse</li>
+        </ul>
+        <h4>Keyword Arguments</h4>
+        <ul>
+            <li><b>rad</b>: <i>function</i> - Radius function</li>
+        </ul>
+        <h4>Returns</h4>
+        <p>
+            Returns a function that can be used when paired with the <a href="#exp">exponential</a> function to map a rectangular region into a non-centered ellipse.
+        </p>
+
+        <hr>
+        <h3 id="rad-poly-star-lambda">Radial Function of Regular Polygon</h3>
+        <p>
+            Defines a polar function of a customisable, origin-centered, regular polygon with the angle as the argument. Paired with the <a href="#exp">exponential</a> function, this function can be used to map a rectangular region
+            into a polygon. This function is given by
+
+            \[r(\theta) = \cos\left(\dfrac{2\arcsin(k) + m\pi}{2n} \right ) \left[\cos\left(\dfrac{2\arcsin(k\cos\theta) + m\pi}{2n} \right ) \right ]^{-1},\]
+
+            where \(n\) is the number of sides of the polygon, \(m\) defines the concavity of the sides, and \(k\) defines the curving of the sides. The polygon is centered at the origin.
+            For perfectly straight sides, set \(k = 1\). For sides without a convexity/concavity change, set \(m = 1\).
+
+
+        </p>
+        <h4>Usage</h4>
+        <pre><code class="python">def rad_poly_star_lambda(n: (int, float), m: (int, float), k: (int, float)) -> function</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><b>n</b>: <i>int</i> or <i>float</i> - Number of sides</li>
+            <li><b>m</b>: <i>int</i> or <i>float</i> - Side concave factor</li>
+            <li><b>k</b>: <i>int</i> or <i>float</i> - Side curving factor</li>
+        </ul>
+        <p>Note that this function can support float sides for polygons that do not line up properly, however, the most common usage will involve using an integer value for \(n > 2\).</p>
+        <h4>Keyword Arguments</h4>
+        <ul>
+            <li><b>rad</b>: <i>function</i> - Radius function</li>
+        </ul>
+        <h4>Returns</h4>
+        <p>
+            Returns a function that can be used when paired with the <a href="#exp">exponential</a> function to map a customised regular polygon centered at the origin.
+        </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="load.js"></script>
+        <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+    </script>
+</body>
+</html>

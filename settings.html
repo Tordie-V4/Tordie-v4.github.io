@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Tordie Settings</title>
+</head>
+<body>
+    <div class="sidebar" id="sidebar"></div>
+    <div class="content" id="content">
+        <h1>Tordie Documentation - Settings</h1>
+        <p>
+            Tordie allows for configuration of default values and settings. These settings are stored in the <code>settings.py</code> file.
+        </p>
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#general-settings">General Settings</a></li>
+                <li><a href="#svg-settings">SVG Settings</a></li>
+                <li><a href="#math-settings">Mathematical Settings</a></li>
+                <li><a href="#parametric-settings">Parametric Settings</a></li>
+                <li><a href="#advanced-settings">Advanced Settings</a></li>
+            </ul>
+        </div>
+        <h2 id="general-settings">General Settings</h2>
+        <p>
+            These settings apply to general shapes and other Tordie specific settings.
+        </p>
+        <h4>Settings</h4>
+        <ul>
+            <li><code>DEFAULT_STROKE</code> - The default color of shapes. This is initially set to <code>"black"</code>.</li>
+            <br>
+            <li><code>DEFAULT_RADIUS</code> - The default radius size of points. This is initially set to <code>3</code>.</li>
+            <br>
+            <li><code>DEFAULT_THICKNESS</code> - The default thickness of lines. This is initially set to <code>2</code>.</li>
+        </ul>
+
+        <hr>
+
+        <h2 id="svg-settings">SVG Settings</h2>
+        <p>
+            These options apply to general shapes and other Tordie specific settings.
+        </p>
+        <h4>Settings</h4>
+        <ul>
+            <li><code>DEAFULT_WIDTH</code> - The default width of the SVG file. This is initially set to <code>800</code>.</li>
+            <br>
+            <li><code>DEFAULT_HEIGHT</code> - The default height of the SVG file. This is initially set to <code>800</code>.</li>
+            <br>
+            <li><code>BACKGROUND</code> - The background color for the SVG file. This is initially set to <code>"white"</code>.</li>
+            <br>
+            <li><code>BOUNDS_FIX</code> - A layer of padding around the outside of the SVG to make the bounds easier to see. This is initially set to <code>16</code>.</li>
+            <br>
+            <li><code>DISPLAY_WIDTH</code> - The width of the displayed PNG render of the SVG result file. This is initially set to <code>1000</code>.</li>
+            <br>
+            <li><code>DISPLAY_HEIGHT</code> - The height of the displayed PNG render of the SVG result file. This is initially set to <code>1000</code>.</li>
+        </ul>
+
+        <hr>
+
+        <h2 id="math-settings">Mathematical Settings</h2>
+        <p>
+            These settings relate to the mathematical properties of the shapes and SVG result file.
+        </p>
+        <h4>Settings</h4>
+        <ul>
+            <li><code>SCALE</code> - The radii of the \(x\) and \(y\) axis as a tuple. For example, <code>SCALE = (3, 5)</code> would display \(x \in [-3, 3]\) and \(y \in [-5, 5]\). This is initially set to <code>(10, 10)</code>.</li>
+        </ul>
+        
+        <hr>
+
+        <h2 id="parametric-settings">Parametric Settings</h2>
+        <p>
+            These settings apply to parametric curves.
+        </p>
+        <h4>Settings</h4>
+        <ul>
+            <li><code>DEFAULT_STEP</code> - Number of steps per parametric. These are equal steps the parameter takes until it travels from \(t_0\) to \(t_n\). They are not the literal distances between the points, so some parts of curves may be smoother than others. The higher this value, the smoother the shape will be but the more processing will be needed when handling them. Lower values may not be smooth but will generally run faster. This is initially set to <code>200</code>.</li>
+        </ul>
+
+        <hr>
+
+        <h2 id="advanced-settings">Advanced Settings</h2>
+        <p>
+            These settings handle mostly advanced mathematical operations and are not recommended to be changed unless you fully understand their purpose. For certain settings, you might find unstable behaviour if the settings are not set correctly.
+        </p>
+        <h4>Settings</h4>
+        <ul>
+            <li><code>POINCARE_ERR</code> - The permitted error radius when approximating properties specific to the <a href="shapes.html#poincare-line">PoincareLine</a> class. This is initially set to <code>0.001</code>.</li>
+            <br>
+            <li><code>MAN_EPS</code> - A manually set machine number, that is the smallest number considered by the Tordie operations - especially when handling approximations. This is initially set to <code>0.0001</code>.</li>
+            <br>
+            <li><code>PARAM_REFLECT_M_DIFF</code> - The error radius to determine the intersection point of the observer to mirror line and a parametric curve. This is performed during <a href="shapes.html#parametric">parametric reflections</a>, and is usually best with higher values. This property is highly unstable, so slight changes can significantly impact results. This is initially set to <code>0.2</code>.</li>
+            <br>
+            <li><code>DIFF_STEP</code> - The limit used when evaluating a derivative at a certain point. This approximates the limit when differentiating by first principles, which allows for more accurate derivatives, regardless of the step size for parametrics. This is initially set to <code>0.001</code>.</li>
+        </ul>
+        <p>
+            Tordie has a simple checking system to make sure that your inputted values for these specific settings are value for operations. You can do so by importing the <code>init</code> function from <code>init.py</code>. For example:
+        </p>
+        <pre><code class="python">from init import init
+    init()</code></pre>
+        <p>
+            You can stop printing the results of the checks by simply inputting the keyword argument <code>short=True</code> into the <code>init</code> function. For example:
+        </p>
+        <pre><code class="python">from init import init
+    init(short=True)</code></pre>
+        <p>
+            Generally, do not set any of these settings to be less than <code>MAN_EPS</code> (the manual machine number), otherwise it will raise an error.
+        </p>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="load.js"></script>
+        <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+    </script>
+</body>
+</html>

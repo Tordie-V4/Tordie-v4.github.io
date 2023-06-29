@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Tordie Shapes</title>
+</head>
+<body>
+    <div class="sidebar" id="sidebar"></div>
+    <div class="content" id="content">
+        <h1>Tordie Documentation - Shapes and Objects</h1>
+        <p>Tordie comes with many custom mathematical operations and tools designed specifically for the usage in Origami.</p>
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#shape">General Shape</a></li>
+                <li><a href="#point">Point</a></li>
+                <li><a href="#line">Line</a></li>
+                <ul>
+                    <li class="indent"><a href="#euclidean-line">Euclidean Line</a></li>
+                    <li class="indent"><a href="#poincare-line">Poincare Line</a></li>
+                </ul>
+                <li><a href="#circle">Circle</a></li>
+                <li><a href="#parametric">Parametric</a></li>
+                <li><a href="#tessellation">Tessellation</a></li>
+                <ul>
+                    <li class="indent"><a href="#miura-ori">Miura Ori</a></li>
+                    <li class="indent"><a href="#waterbomb">Waterbomb</a></li>
+                </ul>
+            </ul>
+        </div>
+        <h2 id="shape">General Shape</h2>
+        <p>The Shape class is an abstract class that represents all shapes</p>
+        <h4>Usage</h4>
+        <pre><code class="python">class Shape(ABC):
+    def __init__(self, self, width=DEFAULT_WIDTH: (int, float), stroke=DEFAULT_STROKE: str)</code></pre>
+        <p>You should never initialize this class directly as the abstract methods are not defined, however, you can use this to create custom shape classes.</p>
+        <h4>Keyword Arguments</h4>
+        <ul>
+            <li><p><b style="color: black;">width</b>: <i>int</i> or <i>float</i> - Width of the stroke for the shape</p></li>
+            <li><p><b>stroke</b>: <i>string</i> - Color of the shape when drawn</p></li>
+        </ul>
+        <p>Defaults are defined in <a href="options.html">the options file</a>. The default width is <code>DEFAULT_RADIUS</code>, and the default stroke is <code>DEFAULT_STROKE</code>.</p>
+        <h4>Methods</h4>
+        <ul>
+            <li><b>set_stroke</b>: <pre><code class="python">def set_stroke(self, stroke: str) -> None</code></pre> Sets stroke color.</li>
+            <br>
+            <li><b>set_width</b>: <pre><code class="python">def set_width(self, width: (int, float)) -> None</code></pre> Sets width.</li>
+        </ul>
+        <h4>Abstract Methods</h4>
+        <p>These methods are implemented differently depending on the specific shape being used.</p>
+        <ul>
+            <li><b>draw</b>: <pre><code class="python">def draw(svg: Diagram) -> None</code></pre> Adds Shape to the given Diagram.</li>
+            <br>
+            <li><b>translate</b>: <pre><code class="python">def translate(vector: Point) -> None</code></pre> Translates a shape by the given vector.</li>
+            <br>
+            <li><b>rotate</b>: <pre><code class="python">def rotate(angle: (int, float), *args) -> None</code></pre> Rotates the shape by a given angle. Most shapes allow for a pivot point rather than rotating about the origin.</li>
+            <br>
+            <li><b>scale</b>: <pre><code class="python">def scale(scale: (int, float, tuple(int, float)), *args) -> None</code></pre> Scales shape size based on given scaling factor. Most shapes allow for a given scaling point to provide as the center of the scaling.</li>
+        </ul>
+    
+        <div class="hr-container">
+            <hr class="custom-hr">
+        </div>
+
+        <h2 id="point">Point</h2>
+        <p>The Point class represents a point in 2D space. This point can be defined using several coordinate systems, but is defaulted to the Cartesian coordinate system. This class implements the <a href="#shape">Shape</a> class properties. Refer to those specifications for information on how to change certain features.</p>
+        <h4>Usage</h4>
+        <pre><code class="python">class Point(Shape):
+    def __init__(self, coord1: (int, float), *args, polar=False: bool, **kwargs)</code></pre>
+        <p>
+            Initializing this shape is fairly simple as it takes in either one or two coordinates to make calculations easier. These points can be thought of as complex numbers, so
+            many of the operations are similar to those of complex numbers. When creating a point with a single coordinate, you are creating a point on the real axis, that is, \((x, 0)\),
+            where \(x\) is your given value.
+        </p>
+        <p>
+            Calling <code>Point(x, y)</code> initializes the point to \((x, y)\), or \(x + iy\), for real numbers \(x\) and \(y\).
+        </p>
+        <h4>Parameters</h4>
+        <ul>
+            <li><p><b>coord1</b>: <i>int</i> or <i>float</i> - The first coordinate of the point. This can be thought of as the real part of a complex number.</p></li>
+        </ul>
+        <h4>Additional Arguments</h4>
+        <ul>
+            <li><p><b>coord2</b>: <i>int</i> or <i>float</i> - The second coordinate of the point. This can be thought of as the imaginary part of a complex number. This is defaulted at zero.</p></li>
+        </ul>
+        <h4>Keyword Arguments</h4>
+        <ul>
+            <li><p><b>polar</b>: <i>bool</i> - Define the given coordinates as polar coordinates, where <code>coord1</code> is \(r\) and the optional <code>coord2</code> is \(\theta\) (which is defaulted at zero).</p></li>
+        </ul>
+        <p>Any additional keyword arguments will be passed to the Shape class. Refer to the <a href="#shape">Shape documentation</a> for more information.</p>
+        <h4>Operations</h4>
+        <p>Points handle their own useful operations so you can generally treat them as numbers, which makes defining custom functions easier.</p>
+        <ul>
+            <li><b>__add__</b>: <pre><code class="python">def __add__(self, other (Point, int, float)) -> Point</code></pre> <p>Adds points together using vector addition. The <code>other</code> object can either be a point or a number and will follow the rules of complex number addition.</p></li>
+            <br>
+            <li><b>__sub__</b>: <pre><code class="python">def __sub__(self, other (Point, int, float)) -> Point</code></pre> <p>Subtracts points using vector subtraction. The <code>other</code> object can either be a point or a number and will follow the rules of complex number subtraction.</p></li>
+            <br>
+            <li><b>__mul__</b>: <pre><code class="python">def __mul__(self, other (Point, int, float)) -> Point</code></pre> <p>Multiplies points using complex number multiplication. The <code>other</code> object can either be a point or a number and will follow the rules of complex number multiplication.</p></li>
+            <br>
+            <li><b>__truediv__</b>: <pre><code class="python">def __truediv__(self, other (Point, int, float)) -> Point</code></pre> Divides points using complex number division. The <code>other</code> object can either be a point or a number and will follow the rules of complex number division.</li>
+            <br>
+            <li><b>__abs__</b>: <pre><code class="python">def __abs__(self) -> float</code></pre> Returns the magnitude of the point, or the distance from the origin.</li>
+            <br>
+            <li><b>__pow__</b>: <pre><code class="python">def __pow__(self, other (int, float)) -> Point</code></pre> Raises the point to a given power. The <code>other</code> object must be a number.</li>
+            <br>
+            <li><b>__repr__</b>: <pre><code class="python">def __repr__(self) -> str</code></pre> Returns a string representation of the point.</li>
+        </ul>
+        <p>The power operator does not handle Point exponents.</p>
+        <h4>Methods</h4>
+        <ul>
+            <li><b>set_cartesian</b>: <pre><code class="python">def set_cartesian(self, x: (int, float), y: (int, float)) -> None</code></pre> Updates to the given cartesian coordinates.</li>
+            <br>
+            <li><b>set_polar</b>: <pre><code class="python">def set_polar(self, r: (int, float), theta: (int, float)) -> None</code></pre> Updates to the given polar coordinates.</li>
+            <br>
+            <li><b>adjust</b>: <pre><code class="python">def adjust(self, width: (int, float), height: (int, float), scale tuple(int, float)) -> None</code></pre><p>Adjusts the point to point specific coordinates on the page. This method should never be called unless directly changing the method of rasterizing or adding to the SVG file.</p></li>
+            <br>
+            <li><b>draw</b>: <pre><code class="python">def draw(self, svg: Drawing) -> None</code></pre><p>Adds the point to the given Drawing object.</p></li>
+            <br>
+            <li><b>reflect</b>: <pre><code class="python">def reflect(self, point: Point) -> Point</code></pre><p>Reflect a given Point through the self point. This is equivalent to rotating the point by half a rotation, with a pivot point of the self point.</p></li>
+            <br>
+            <li><b>translate</b>: <a href="#shape">See shape documentation</a></li>
+            <br>
+            <li><b>rotate</b>: <a href="#shape">See shape documentation</a>. <pre><code class="python">def rotate(self, angle: (int, float), pivot: Point) -> None</code></pre> This method supports a specific pivot Point. You can use this by setting the first additional argument to this point.</li>
+            <br>
+            <li><b>scale</b>: <a href="#shape">See shape documentation</a>. <pre><code class="python">def scale(self, scale: (int, float, tuple(int, float)), pivot: Point) -> None</code></pre>This method supports a specific pivot Point. You can use this by setting the first additional argument to this point.</li>
+        </ul>
+
+        <div class="hr-container">
+            <hr class="custom-hr">
+        </div>
+
+        <h2 id="line">Line</h2>
+        <p>
+            The Line class is a subclass of the Shape class. It is defined by two points, <code>start</code> and <code>end</code>. The line is drawn between these two points based on the projection type.
+            The most common type of geometry used, which will output a straight line, is the <code>EuclideanLine</code>.
+        </p>
+        <h4>Usage</h4>
+        <pre><code class="python">class Line(Shape):
+    def __init__(self, point1: Point, point2: Point, **kwargs)</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><b>point1</b>: <pre><code class="python">point1: Point</code></pre><p>The first point of the line.</p></li>
+            <br>
+            <li><b>point2</b>: <pre><code class="python">point2: Point</code></pre><p>The second point of the line.</p></li>
+        </ul>
+        <h4>Keyword Arguments</h4>
+        <p>Any additional keyword arguments will be passed to the Shape class. Refer to the <a href="#shape">Shape documentation</a> for more information.</p>
+        <h4>Abstract Methods</h4>
+        <ul>
+            <li><b>reflect</b>: <pre><code class="python">def reflect(self, point: Point) -> Point</code></pre><p>Reflects the given point over the self line. This is specific to each type of line.</p></li>
+            <br>
+            <li><b>conformal</b>: <pre><code class="python">def conformal(self, f: function) -> (Line, Parametric)</code></pre><p>Reflects the given point over the self line. This is specific to each type of line.</p></li>
+        </ul>
+        <h4>Methods</h4>
+        <ul>
+            <li><b>translate</b>: <a href="#shape">See shape documentation</a></li>
+            <br>
+            <li><b>rotate</b>: <a href="#shape">See shape documentation</a>. <pre><code class="python">def rotate(self, angle: (int, float), pivot: Point) -> None</code></pre> This method supports a specific pivot Point. You can use this by setting the first additional argument to this point.</li>
+            <br>
+            <li><b>scale</b>: <a href="#shape">See shape documentation</a>. <pre><code class="python">def scale(self, scale: (int, float, tuple(int, float)), pivot: Point) -> None</code></pre>This method supports a specific pivot Point. You can use this by setting the first additional argument to this point.</li>
+        </ul>
+
+        <hr>
+        <h3 id="euclidean-line">Eucliean Line</h3>
+        <p>
+            The Euclidean Line class is a subclass of the Line class. It is defined by two points, <code>start</code> and <code>end</code>. The line is drawn between these two points using the Euclidean projection.
+        </p>
+        <h4>Usage</h4>
+        <pre><code class="python">class EuclideanLine(Line):
+    def __init__(self, point1: Point, point2: Point, **kwargs)</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><b>point1</b>: <pre><code class="python">point1: Point</code></pre><p>The first point of the line.</p></li>
+            <br>
+            <li><b>point2</b>: <pre><code class="python">point2: Point</code></pre><p>The second point of the line.</p></li>
+        </ul>
+        <h4>Keyword Arguments</h4>
+        <p>Any additional keyword arguments will be passed to the Line class. Refer to the <a href="#line">Line documentation</a> for more information.</p>
+        <h4>Methods</h4>
+        <ul>
+            <li><b>draw</b>: <pre><code class="python">def draw(self, svg: Drawing) -> None</code></pre><p>Adds the line to the Drawing object.</p></li>
+            <br>
+            <li><b>reflect</b>: <pre><code class="python">def reflect(self, point: Point) -> Point</code></pre><p>Reflects the given point over the self line. This is specific to each type of line.</p></li>
+            <br>
+            <li><b>conformal</b>: <pre><code class="python">def conformal(self, f: function) -> EuclideanLine</code></pre><p>Reflects the given point over the self line. This is specific to each type of line.</p></li>
+        </ul>
+
+        <hr>
+        <h3 id="poincare-line">Poincare Line</h3>
+        <p>
+            The Poincare Line class is a subclass of the Line class. It is defined by two points, <code>start</code> and <code>end</code>. The line is drawn between these two points using the Poincare projection onto a unit disk. The start and end points are the literal points on the disk and the line itself is drawn based on those points.
+        </p>
+        <h4>Usage</h4>
+        <pre><code class="python">class PoincareLine(Line):
+    def __init__(self, point1: Point, point2: Point, **kwargs)</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><b>point1</b>: <pre><code class="python">point1: Point</code></pre><p>The first point of the line.</p></li>
+            <br>
+            <li><b>point2</b>: <pre><code class="python">point2: Point</code></pre><p>The second point of the line.</p></li>
+        </ul>
+        <h4>Keyword Arguments</h4>
+        <p>Any additional keyword arguments will be passed to the Line class. Refer to the <a href="#line">Line documentation</a> for more information.</p>
+        <h4>Methods</h4>
+        <ul>
+            <li><b>arc</b>: <pre><code class="python">def arc(self) -> Circle</code></pre><p>Generates the literal circle that defines the arc between the two points. That is, the actual line is an arc of this generated circle.</p></li>
+            <li><b>draw</b>: <pre><code class="python">def draw(self, svg: Drawing) -> None</code></pre><p>Adds the line to the Drawing object.</p></li>
+            <br>
+            <li><b>reflect</b>: <pre><code class="python">def reflect(self, point: Point) -> Point</code></pre><p>Reflects the given point over the self line. This is specific to each type of line.</p></li>
+            <br>
+            <li><b>conformal</b>: <pre><code class="python">def conformal(self, f: function) -> None</code></pre><p>Reflects the given point over the self line. This is specific to each type of line. This function has yet to be implemented</p></li>
+        </ul>
+
+        <div class="hr-container">
+            <hr class="custom-hr">
+        </div>
+
+        <h2 id="circle">Circle</h2>
+        <p>
+            The Circle class is a subclass of the Shape class. It is defined by a center point and a radius.
+        </p>
+        <h4>Usage</h4>
+        <pre><code class="python">class Circle(Shape):
+    def __init__(self, center: Point, radius: (int, float), **kwargs)</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><b>center</b>: <pre><code class="python">center: Point</code></pre><p>The center point of the circle.</p></li>
+            <br>
+            <li><b>radius</b>: <pre><code class="python">radius: Point</code></pre><p>The radius of the circle.</p></li>
+        </ul>
+        <h4>Keyword Arguments</h4>
+        <p>Any additional keyword arguments will be passed to the Shape class. Refer to the <a href="#shape">Shape documentation</a> for more information.</p>
+        <h4>Methods</h4>
+        <ul>
+            <li><b>draw</b>: <pre><code class="python">def draw(self, svg: Drawing) -> None</code></pre><p>Adds the circle to the Drawing object.</p></li>
+            <br>
+            <li><b>reflect</b>: <pre><code class="python">def reflect(self, point: Point) -> Point</code></pre>This method reflects a point through the self circle. This reflection is based on a circle inversion of a point such that the center of the circle, the original point and the reflected point are colinear, and the radii from the distance between each point and the circle's center multiply to give the radius of the circle squared.</li>
+        </ul>
+
+        <div class="hr-container">
+            <hr class="custom-hr">
+        </div>
+        <h2 id="parametric">Parametric</h2>
+        <p>
+            The Parametric class is a subclass of the Shape class. It is defined by a function that takes a single parameter, <code>t</code>. The Parametric class will then draw a line between each point returned by the function for each value of <code>t</code> in the given range.
+            There are several usages for the initializations that allow for easier definitions of several common shapes, like Euclidean Lines.
+        </p>
+        <h4>Usage</h4>
+        <pre><code class="python">class Parametric(Shape):
+    def __init__(self, *args, observer=Point(0,0): Point, step=DEFAULT_STEP: int, **kwargs)</code></pre>
+        <p>This function takes several kinds of inputs depending on how you want to make the curve.</p>
+        <ul>
+            <li><b>General Parametric</b>: <pre><code class="python">class Parametric(Shape):
+    def __init__(self, fx: function, fy: function, t0: (int, float), tn: (int, float), **kwargs)</code></pre>
+            <p>
+                This defines the curve \(\left(f_x(t), f_y(t)\right)\) for \(t \in [t_0, t_n] \subset \mathbb{R}\). This is the most general form of the Parametric class.
+            </p></li>
+            <br>
+            <li>
+            <b>Euclidean Line</b>: <pre><code class="python">class Parametric(Shape):
+    def __init__(self, point1: Point, point2: Point, **kwargs)</code></pre>
+            <p>
+                This defines the Euclidean Line between the two points, \((x_1, y_1)\) and \((x_2, y_2)\), as a Parametric. This is a special case of the general parametric curve where \(f_x(t) = (1-t)x_1 + tx_2\) and \(f_y(t) = (1-t)y_1 + ty_2\). This allows for more detailed
+                conformal mappings with Euclidean Lines, rather than just updating the end-points.
+            </p>
+            </li>
+            <br>
+            <li>
+            <b>Line Converstion</b>: <pre><code class="python">class Parametric(Shape):
+    def __init__(self, line: EuclideanLine, **kwargs)</code></pre>
+            <p>
+                This works identifically to the above Euclidean Line initialization, but takes in a Euclidean Line object instead of two points. This is useful if you already have a Euclidean Line object and want to convert it to a Parametric.
+            </p>
+            </li>
+        </ul>
+        <h4>Keyword Arguments</h4>
+        <ul>
+            <li><b>step</b>: <i>int</i> or <i>float</i> - This defines the number of line-segments that make the curve. The curve itself isn't a perfect curve, rather many lines added together. The higher this value, the more smooth it will be. The default is the value <code>DEFAULT_STEP</code> defined in the <a href="options.html">options file</a></li>
+            <br>
+            <li><b>observer</b>: <i>Point</i> - This point defines the observer point that is used when reflecting. This is the origin by default.</li>
+        </ul>
+        <p>Any additional keyword arguments will be passed to the Shape class. Refer to the <a href="#shape">Shape documentation</a> for more information.</p>
+        <h4>Methods</h4>
+        <ul>
+            <li><b>draw</b>: <pre><code class="python">def draw(self, svg: Drawing) -> None</code></pre><p>Adds the curve to the Drawing object.</p></li>
+            <br>
+            <li><b>reflect</b>: <pre><code class="python">def reflect(self, point: Point) -> Point</code></pre><p>Reflects the given point over the self curve. This reflection is defined as follows.
+            <ol>
+                <li>Find the point on the curve that the line through the given point and the observer passes through - if it exists. Call this point \(P\).</li>
+                <br>
+                <li>Identify the osculating circle using the equation: \[\boldsymbol{c}(t) = \boldsymbol{r}_c(s_0) + \rho (s_0) \left(\cos t \boldsymbol{T}(s_0) + \sin t \boldsymbol{N}(s_0)\right),\]
+                    where \(\boldsymbol{r}_c(s_0)\) is the center of the osculating circle, \(\rho(s_0) = \dfrac{1}{\kappa(s_0)}\) is the radius of the osculating circle defined by the reciprocal of the curvature, and \(\boldsymbol{T}(s_0)\) and \(\boldsymbol{N}(s_0)\) are the unit tangent and unit normal vectors respectively at the point \(s_0\). This is the circle that the curve is osculating at the point \(s_0\).</li>
+                </li>
+                <br>
+                <li>Reflect the given point over the osculating circle.</li>
+            </ol>
+            <br>
+            This method is consistent with circle inversion and Euclidean and Poincare line reflections, however it requires an observer point and is unstable for self-intersecting curves. There will be revisions to this method in the future.
+            </p></li>
+            <br>
+            <li><b>conformal</b>: <pre><code class="python">def conformal(self, f: function) -> Parametric</code></pre><p>Applies a conformal mapping to the curve and returns a new Parametric object.</p></li>
+            <br>
+            <li><b>get_reflect_point</b>: <pre><code class="python">def get_reflect_point(self, point: Point) -> Point</code></pre><p>This method is designed for internal and should never be used unless you are changing the reflection method for a Parametric curve. This method returns the point on the curve that is closest to where the osculating circle should be calculated from. This method is unstable for self-intersecting curves.</p></li>
+            <br>
+            <li><b>para_reflect</b>: <pre><code class="python">def para_reflect(self, parametric: Parametric) -> Parametric</code></pre><p>Reflects an entire Parametric object over the self Parametric and returns the result.</p></li>
+        </ul>
+
+        <div class="hr-container">
+            <hr class="custom-hr">
+        </div>
+        
+        <h2 id="tessellation">Tessellation</h2>
+        <p>
+            A Tessellation is a wrapper object that is comprised of other shapes, usually Lines and Parametrics. The Tessellation class is abstract, and can be used to generate certain popular tessellations to be used under transformations or as is.
+        </p>
+        <h4>Initialization</h4>
+        <p>
+            The Tessellation class is abstract, and cannot be initialized. The Tessellation class is not considered a subclass of the Shape class since it is a wrapper of shapes.
+            <pre><code class="python">class Tessellation(ABC):
+    def __init__(self, width=DEFAULT_WIDTH: (int, float), stroke=DEFAULT_STROKE: str, **kwargs):</code></pre>
+        You should never initialise this class directly as the abstract methods are not defined, however, you can use this to create custom tessellation classes.</p>
+        <h4>Keyword Arguments</h4>
+        <ul>
+            <li><p><b>width</b>: <i>int</i> or <i>float</i> - Width of the stroke for the shape. The default value is <code>DEFAULT_WIDTH</code>, which is defined in <a href="options.html">the options file</a>.</p></li>
+            <br>
+            <li><p><b>stroke</b>: <i>string</i> - Color of the shape when drawn. The default value is <code>DEFAULT_STROKE</code>, which is defined in <a href="options.html">the options file</a>.</p></li>
+        </ul>
+        <h4>Methods</h4>
+        <ul>
+            <li><b>draw</b>: <pre><code class="python">def draw(self, svg: Drawing) -> None</code></pre><p>Adds the tessellation to the Drawing object.</p></li>
+            <br>
+            <li><b>set_stroke</b>: <pre><code class="python">def set_stroke(self, stroke: str) -> None</code></pre><p>Sets the stroke color of the tessellation.</p></li>
+            <br>
+            <li><b>conformal</b>: <pre><code class="python">def conformal(self, f: function) -> Tessellation</code></pre><p>Applies a conformal mapping to the tessellation and returns a new Tessellation object.</p></li>
+        </ul>
+        <hr>
+        <h3 id="miura-ori">Miura Ori</h3>
+        <p>
+            The <a href="https://en.wikipedia.org/wiki/Miura_fold">Miura Ori</a> is a tessellation that is used in origami. It is a tessellation of parallelograms that are entirely flat-foldable and collapse into a compact shape.
+        </p>
+        <h4>Usage</h4>
+        <pre><code class="python">class MiuraOri(Tessellation):
+    def __init__(self, layers: int, depth: int, parametric=False: bool, parametric_verts=False: bool, parametric_diags=False: bool, squash_factor=1: (int, float), top=True: bool, h_width=SCALE[0]*2: (int, float), v_height=SCALE[1]*2: (int, float), **kwargs)</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><b>layers</b>: <i>int</i> - Number of vertical layers in the tessellation</li>
+            <br>
+            <li><b>depth</b>: <i>int</i> - Number of parallelograms in each layer</li>
+        </ul>
+        <h4>Keyword Arguments</h4>
+        <ul>
+            <li><p><b>h_width</b>: <i>int</i> or <i>float</i> - The width of the tesselation from left to right. This value is set to the width of the Drawing on default. The default setting is the width of the entire Drawing. You can set this in <a href="options.html">the options file</a>.</p></li>
+            <li><p><b>v_height</b>: <i>int</i> or <i>float</i> - The height of the tesselation from top to bottom. This value is set to the height of the Drawing on default. The default setting is the height of the entire Drawing. You can set this in <a href="options.html">the options file</a>.</p></li>
+            <li><p><b>start</b>: <i>Point</i> - The location of the bottom left corner of the tesselation's location. On default, this is the bottom left of the entire Drawing.</p></li>
+            <li><p><b>top</b>: <i>bool</i> - Allow for the top and bottom horizontal line of the tesselation to be shown. This is particularly useful when using a circular mapping.</p></li>
+            <li><p><b>parametric</b>: <i>bool</i> - Option to change all lines to Parametric objects. The default value for this option is false.</p></li>
+            <li><p><b>parametric_verts</b>: <i>bool</i> - Option to make all vertical lines Parametric Objects. The default value for this option is false.</p></li>
+            <li><p><b>parametric_diags</b>: <i>bool</i> - Option to make all diagonal lines Parametric Objects. The default value for this option is false.</p></li>
+            <li><p><b>squash_factor</b>: <i>int</i> or <i>float</i> - Flatten the diagonal lines to make the parallelogram closer to being square. The default value for this option is \(1\).</p></li>
+        </ul>
+        <p>
+            Without adjustments to the width, start or height keyword arguments, the tessellation will automatically fill the entire canvas. For additional keyword arguments, refer to the main <a href="#tessellation">Tessellation</a> class documentation.
+        </p>
+        <hr>
+        <h3 id="waterbomb">Waterbomb</h3>
+        <p>
+            The Waterbomb tessellation is a tessellation that is used in origami. It is a tessellation of waterbomb bases pieced together and is entirely flat-foldable and collapse into a compact shape.
+        </p>
+        <h4>Usage</h4>
+        <pre><code class="python">class Waterbomb(Tessellation):
+    def __init__(self, layers: int, depth: int, parametric=False: bool, parametric_verts=False: bool, parametric_diags=False: bool, squash_factor=1: (int, float), top=True: bool, h_width=SCALE[0]*2: (int, float), v_height=SCALE[1]*2: (int, float), **kwargs)</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><b>layers</b>: <i>int</i> - Number of vertical layers in the tessellation</li>
+            <br>
+            <li><b>depth</b>: <i>int</i> - Number of parallelograms in each layer</li>
+        </ul>
+        <h4>Keyword Arguments</h4>
+        <ul>
+            <li><p><b>width</b>: <i>int</i> or <i>float</i> - The width of the tesselation from left to right. This value is set to the width of the Drawing on default. The default setting is the width of the entire Drawing. You can set this in <a href="options.html">the options file</a></p></li>
+            <li><p><b>height</b>: <i>int</i> or <i>float</i> - The height of the tesselation from top to bottom. This value is set to the height of the Drawing on default. The default setting is the height of the entire Drawing. You can set this in <a href="options.html">the options file</a></p></li>
+            <li><p><b>start</b>: <i>Point</i> - The location of the bottom left corner of the tesselation's location. On default, this is the bottom left of the entire Drawing.</p></li>
+            <li><p><b>top</b>: <i>bool</i> - Allow for the top and bottom horizontal line of the tesselation to be shown. This is particularly useful when using a circular mapping.</p></li>
+            <li><p><b>parametric</b>: <i>bool</i> - Option to change all lines to Parametric objects. The default value for this option is false.</p></li>
+            <li><p><b>parametric_verts</b>: <i>bool</i> - Option to make all vertical lines Parametric Objects. The default value for this option is false.</p></li>
+            <li><p><b>parametric_diags</b>: <i>bool</i> - Option to make all diagonal lines Parametric Objects. The default value for this option is false.</p></li>
+            <li><p><b>squash_factor</b>: <i>int</i> or <i>float</i> - Flatten the diagonal lines to make the parallelogram closer to being square. The default value for this option is \(1\).</p></li>
+        </ul>
+        <p>
+            Without adjustments to the width, start or height keyword arguments, the tessellation will automatically fill the entire canvas.
+        </p>
+
+
+
+
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="load.js"></script>
+        <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+    </script>
+</body>
+</html>

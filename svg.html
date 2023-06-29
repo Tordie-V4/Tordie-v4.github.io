@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Tordie SVG</title>
+</head>
+<body>
+    <div class="sidebar" id="sidebar"></div>
+    <div class="content" id="content">
+        <h1>Tordie Documentation - SVG</h1>
+        <p>
+            Tordie is designed to generate vector graphics with the purpose of applications in Origami. It is important for the mathematics in Origami to support vector graphics as this must be precise enough to be
+            able to score on any scale.
+        </p>
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#diagram">Diagram</a></li>
+                <li><a href="#parser">Parser</a></li>
+            </ul>
+        </div>
+        <h2 id="diagram">Diagram</h2>
+        <p>
+            The Diagram class is the object responsible for holding shape information and generating the final vector graphic. It is the main object that is used to create the final SVG file.
+        </p>
+        <h4>Usage</h4>
+        <pre><code class="python">class Diagram:
+    def __init__(self, width=DEFAULT_WIDTH, height=DEFAULT_HEIGHT, name="result.svg")</code></pre>
+        <h4>Keyword Arguments</h4>
+        <ul>
+            <li><b>width</b>: <i>int</i> or <i>float</i> - Width of resulting image. This is defaulted as <code>DEFAULT_WIDTH</code>, defined in the <a href="options.html">options file</a>.</li>
+            <br>
+            <li><b>height</b>: <i>int</i> or <i>float</i> - Height of resulting image. This is defaulted as <code>DEFAULT_HEIGHT</code>, defined in the <a href="options.html">options file</a>.</li>
+            <br>
+            <li><b>name</b>: <i>int</i> or <i>float</i> - Name of resulting SVG file. This is defaulted as <code>result.svg</code>.</li>
+        </ul>
+        <h4>Methods</h4>
+        <p>The Diagram class is mostly concerned with generating the resulting SVG and displaying the image in a preview PNG.</p>
+        <ul>
+            <li>
+                <b>set_name</b>: <pre><code class="python">def set_name(self, name: str)</code></pre>
+                <p>
+                    Set the name of the SVG file. You do not need to worry about including the <code>.svg</code> extension as this is automatically added if you do not include it.
+                </p>
+            </li>
+            <br>
+            <li>
+                <b>save</b>:
+                <pre><code class="python">def save(self, directory="": str)</code></pre>
+                <p>
+                    Save the SVG file. This will save the file to the current working directory. If you want to save to a different directory, use the keyword argument <code>directory</code> to set a directory.
+                </p>
+            </li>
+            <li>
+                <br>
+                <b>draw</b>: <pre><code class="python">def draw(self, *args)</code></pre>
+                <p>
+                    Add Shapes to the Diagram. This method takes in any number of array-like <a href="shapes.html">Shape</a> objects and adds them to the Diagram. This includes lists, tuples, and other iterable objects, as well as single Shape objects.
+                </p>
+            </li>
+            <br>
+            <li>
+                <b>display</b>: <pre><code class="python">def display(self, name="temp.png": str)</code></pre>
+                <p>
+                    This method creates a pop-up of the SVG file as a rendered PNG, saved as a file with the name <code>name</code>. This makes it easy to view the SVG file without having to open it in a browser or SVG editing program.
+                </p>
+            </li>
+        </ul>
+    
+        <div class="hr-container">
+            <hr class="custom-hr">
+        </div>
+        <h2 id="parser">Parser</h2>
+        <p>
+            The Parser class is the object responsible for parsing an SVG file. The functionality associated is limited to lines and paths, excluding Bézier curves, as these are the only two types of objects that are used in Tordie. This allows for custom SVG
+            files to have transformations applied to them without needed to devise specific code to create a tessellation yourself. This parser is relatively unstable and may not work with all SVG files.
+        </p>
+        <h4>Usage</h4>
+        <pre><code class="python">class ImportedSVG():
+    def __init__(self, path: str, pivot=Point(0,0): Point, rel_scale="auto": str)</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><b>path</b>: <i>str</i> - Path to the SVG file.</li>
+        </ul>
+        <h4>Keyword Arguments</h4>
+        <ul>
+            <li><b>pivot</b>: <i>Point</i> - Center point for the imported image to be placed. This defaults to the origin.</li>
+            <br>
+            <li><b>rel_scale</b>: <i>str</i> - Scale of the image's axes. This string must contain two numbers, either percentages or decimals. For example, <code>"(8u,34%)"</code> would work to make the horizontal width \(8\) units and \(34\%\) to make the vertical height \(34\%\). Set this to <code>"auto"</code> to assign a normal scale based on the image dimensions, defined in <a href="options.html">the options file</a>.</li>
+        </ul>
+        <h4>Methods</h4>
+        <ul>
+            <li><b>get_center</b>:
+                <pre><code class="python">def draw(self, svg: Diagram) -> None</code></pre>
+                <p>
+                    Draw the imported SVG onto the given Diagram object. This method should not be called unless you intend on changing the functionality of the parser.
+                </p>
+            </li>
+            <br>
+            <li><b>get_center</b>:
+                <pre><code class="python">def get_center(self) -> Point</code></pre>
+                <p>
+                    Returns the center point of the imported image. When the shapes are generated, this center point will align with the given pivot point. You can think of this as the rectangular centroid of the image. This method should not be called unless you intend on changing the functionality of the parser.
+                </p>
+            </li>
+            <br>
+            <li>
+                <b>set_center</b>:
+                <pre><code class="python">def set_center(self, point: Point) -> None</code></pre>
+                <p>
+                    Set the center point of the imported image. When the shapes are generated, this center point will align with the given pivot point. You can think of this as the rectangular centroid of the image.
+                </p>
+            </li>
+            <br>
+            <li>
+                <b>generate_paths</b>
+                <pre><code class="python">def generate_paths(self) -> List</code></pre>
+                <p>
+                    This method should be called when you wish to obtain the list of shapes that comprise the imported image. This will return a list of <a href="shapes.html">Shape</a> objects that can be added to a <a href="#diagram">Diagram</a> object.
+                </p>
+            </li>
+        </ul>
+
+
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="load.js"></script>
+        <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+    </script>
+</body>
+</html>

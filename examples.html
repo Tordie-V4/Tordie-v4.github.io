@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Tordie Examples</title>
+</head>
+<body>
+    <div class="sidebar" id="sidebar"></div>
+    <div class="content" id="content">
+        <h1>Tordie Examples</h1>
+        <p>
+            Getting to learn how to use Tordie must be quite challenging for new users, so over time, more examples will be added here for reference to give a better understanding of how Tordie works. For now, these examples are mostly relating to an OSME paper Tordie will be featured in.
+        </p>
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#6pstar-miura-ori">Miura Ori Mapped into 6-Pointed Star</a></li>
+                <li><a href="#import-and-map-svg">Importing and Mapping an SVG File</a></li>
+            </ul>
+        </div>
+        <br>
+        <h2 id="6pstar-miura-ori">Miura Ori Mapped into 6-Pointed Star</h2>
+        <p>
+            By using the <code>conformal</code> method, we can map the Miura Ori into a 6-pointed star. This is done by using the <code>rad_poly_star_lambda</code> function from the <code>maths.helpers</code> module to create a radial function that is used to map the Miura Ori.
+        </p>
+        <pre><code class="python">from init import init
+from svg.svg import Diagram
+from shapes.point import Point as P
+from shapes.tessellation import MiuraOri
+from maths.helpers import rad_poly_star_lambda, exp
+from math import exp as e # Built in maths class
+from math import pi
+
+def rad(p):
+    el_rad = rad_poly_star_lambda(6, 2, 1)
+    return p.x/e(p.x)*el_rad(p)
+
+if __name__ == '__main__':
+    init(short=True)
+    drawing = Diagram()
+    ori = MiuraOri(4, 24, v_height=2*pi, h_width=2*pi, parametric_verts=True, top=False, squash_factor=1, start=P(2, -pi))
+    drawing.draw(ori.conformal(lambda t: exp(t, rad=rad)))
+    drawing.display()
+        </code></pre>
+        <hr>
+        <h2 id="import-and-map-svg">Importing and Mapping an SVG File</h2>
+        <p>
+            Tordie can also import SVG files and map them using the <code>conformal</code> method. Importing an SVG file is quite simple using the <a href="svg.html#parser">SVG parser</a>, however, there are some important features that should be considered if you intend on mapping the results. Below is an example of applying a conformal mapping onto an SVG file that is stored in the main directory of Tordie.
+        </p>
+        <pre><code class="python">from init import init
+from svg.svg import Diagram
+from shapes.point import Point as P
+from shapes.parametric import Parametric
+from svg.svg_parser import ImportedSVG
+
+def mapping(p):
+    return p.x/e(p.x)*exp(p)
+
+if __name__ == '__main__':
+
+    init(short=False)
+    drawing = Diagram()
+    imported = ImportedSVG('input.svg', rel_scale="(3.14159265358979u,3.14159265358979u)", pivot=P(4, 0))
+    paths = imported.generatePaths()
+    drawing.draw([Parametric(path).conformal(lambda t: mapping(t)) for path in paths])
+    drawing.display()
+    </code></pre>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="load.js"></script>
+</body>
+</html>
